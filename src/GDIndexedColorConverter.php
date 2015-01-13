@@ -32,10 +32,10 @@ class GDIndexedColorConverter
 	 *
 	 * @param ImageResource $im The image resource
 	 * @param array $palette The color palette
-	 * @param float @dither The Floyd–Steinberg dither amount, value is between 0 and 1 and default value is 0.75
+	 * @param float $dither The Floyd–Steinberg dither amount, value is between 0 and 1 and default value is 0.75
 	 * @return ImageResource The image resource in indexed colr mode.
 	 */
-	public function convertToIndexedColor (&$im, $palette, $dither = 0.75)
+	public function convertToIndexedColor ($im, $palette, $dither = 0.75)
 	{
 		$newPalette = array();
 		foreach($palette as $paletteColor) {
@@ -48,40 +48,7 @@ class GDIndexedColorConverter
 		$width = imagesx($im);
 		$height = imagesy($im);
 
-		$pixels = array();
-		for ($i = 0; $i < $height; $i++) {
-			$row = array();
-			for ($j = 0; $j < $width; $j++) {
-				$index = imagecolorat($im, $j, $i);
-				$color = imagecolorsforindex($im, $index);
-				$pixel = array(
-					'x' => $j,
-					'y' => $i,
-					'index' => $index,
-					'rgb' => array(
-						$color['red'],
-						$color['green'],
-						$color['blue']
-					),
-					'alpha' => $color['alpha'],
-				);
-				$pixel['lab'] = $this->RGBtoLab($pixel['rgb']);
-				$row[] = $pixel;
-			}
-			$pixels[] = $row;
-		}
-
-		// set new image
-		$newPixels = $this->floydSteinbergDither($pixels, $width, $height, $newPalette, $dither);
-		$newImage = imageCreateTrueColor($width, $height);
-		// imageantialias($newImage, false);
-		for ($i = 0; $i < $height; $i++) {
-			for ($j = 0; $j < $width; $j++) {
-				$pixel = $newPixels[$i][$j];
-				$color = imagecolorallocate($newImage, $pixel['rgb'][0], $pixel['rgb'][1], $pixel['rgb'][2]);
-				imagesetpixel($newImage, $j, $i, $color);
-			}
-		}
+		$newImage = $this->floydSteinbergDither($im, $width, $height, $newPalette, $dither);
 
 		return $newImage;
 	}
@@ -91,50 +58,79 @@ class GDIndexedColorConverter
 	 *
 	 * http://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering
 	 *
-	 * @param array $pixel The pixels of an image
+	 * @param ImageResource $im The image resource
 	 * @param integer $width The width of an image
 	 * @param integer $height The height of an image
 	 * @param array $palette The color palette
 	 * @param float $amount The dither amount(value is between 0 and 1)
 	 * @return array The pixels after applying Floyd–Steinberg dithering
 	 */
-	private function floydSteinbergDither(&$pixels, $width, $height, &$palette, $amount = 0.75)
+	private function floydSteinbergDither($im, $width, $height, &$palette, $amount)
 	{
-		for ($i = 0; $i < $height; $i++) {
-			for ($j = 0; $j < $width; $j++) {
-				$pixel = $pixels[$i][$j];
-				$closestColor = $this->getClosestColor($pixel, $palette, 'rgb');
-				$oldRGB = $pixel['rgb'];
-				$newRGB = $closestColor['rgb'];
+		$newImage = imagecreatetruecolor($width, $height);
 
-				$pixels[$i][$j]['rgb'] = $newRGB;
-				foreach ($newRGB as $key => $channel) {
-					$quantError = $oldRGB[$key] - $newRGB[$key];
+		for ($i = 0; $i < $height; $i++) {
+			if ($i === 0) {
+				$currentRowColorStorage = array();
+			} else {
+				$currentRowColorStorage = $nextRowColorStorage;
+			}
+
+			$nextRowColorStorage = array();
+
+			for ($j = 0; $j < $width; $j++) {
+				if ($i === 0 && $j === 0) {
+					$color = $this->getRGBColorAt($im, $j, $i);
+				} else {
+					$color = $currentRowColorStorage[$j];
+				}
+				$closestColor = $this->getClosestColor(array('rgb' => $color), $palette, 'rgb');
+				$closestColor = $closestColor['rgb'];
+
+				if ($j < $width - 1) {
+					if ($i === 0) {
+						$currentRowColorStorage[$j + 1] = $this->getRGBColorAt($im, $j + 1, $i);
+					}
+				}
+				if ($i < $height - 1) {
+					if ($j === 0) {
+						$nextRowColorStorage[$j] = $this->getRGBColorAt($im, $j, $i + 1);;
+					}
 					if ($j < $width - 1) {
-						$pixels[$i][$j + 1]['rgb'][$key] += $quantError * 7 / 16 * $amount;
+						$nextRowColorStorage[$j + 1] = $this->getRGBColorAt($im, $j + 1, $i + 1);
+					}
+				}
+
+				foreach ($closestColor as $key => $channel) {
+					$quantError = $color[$key] - $closestColor[$key];
+					if ($j < $width - 1) {
+						$currentRowColorStorage[$j + 1][$key] += $quantError * 7 / 16 * $amount;
 					}
 					if ($i < $height - 1) {
 						if ($j > 0) {
-							$pixels[$i + 1][$j - 1]['rgb'][$key] += $quantError * 3 / 16 * $amount;
+							$nextRowColorStorage[$j - 1][$key] += $quantError * 3 / 16 * $amount;
 						}
-						$pixels[$i + 1][$j]['rgb'][$key] += $quantError * 5 / 16 * $amount;
+						$nextRowColorStorage[$j][$key] += $quantError * 5 / 16 * $amount;
 						if ($j < $width - 1) {
-							$pixels[$i + 1][$j + 1]['rgb'][$key] += $quantError * 1 / 16 * $amount;
+							$nextRowColorStorage[$j + 1][$key] += $quantError * 1 / 16 * $amount;
 						}
 					}
 				}
+
+				$newColor = imagecolorallocate($newImage, $closestColor[0], $closestColor[1], $closestColor[2]);
+				imagesetpixel($newImage, $j, $i, $newColor);
 			}
 		}
 
-		return $pixels;
+		return $newImage;
 	}
 
 	/**
 	 * Get the closest available color from a color palette.
 	 *
-	 * @param array @pixel The pixel that contains the color to be calculated
-	 * @param array @palette The palette that contains all the available colors
-	 * @mode string @mode The calculation mode, the value is 'rgb' or 'lab', 'rgb' is default value.
+	 * @param array $pixel The pixel that contains the color to be calculated
+	 * @param array $palette The palette that contains all the available colors
+	 * @param string $mode The calculation mode, the value is 'rgb' or 'lab', 'rgb' is default value.
 	 * @return array The closest color from the palette
 	 */
 	private function getClosestColor($pixel, &$palette, $mode = 'rgb')
@@ -169,6 +165,19 @@ class GDIndexedColorConverter
 	 */
 	private function calculateEuclideanDistanceSquare($p, $q) {
 		return pow(($q[0] - $p[0]), 2) + pow(($q[1] - $p[1]), 2) + pow(($q[2] - $p[2]), 2);
+	}
+
+	/**
+	 * Calculate the RGB color of a pixel.
+	 *
+	 * @param ImageResource $im The image resource
+	 * @param integer $x The x-coordinate of the pixel
+	 * @param integer $y The y-coordinate of the pixel
+	 * @return array An array with red, green and blue values of the pixel
+	 */
+	private function getRGBColorAt($im, $x, $y) {
+		$index = imagecolorat($im, $x, $y);
+		return array(($index >> 16) & 0xFF, ($index >> 8) & 0xFF, $index & 0xFF);
 	}
 
 	/**
@@ -269,3 +278,4 @@ class GDIndexedColorConverter
 		);
 	}
 }
+
