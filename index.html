@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="GDIndexedColorConverter : PHP library - convert an image to indexed color mode.">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>GDIndexedColorConverter</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/ccpalettes/gd-indexed-color-converter">View on GitHub</a>
+
+          <h1 id="project_title">GDIndexedColorConverter</h1>
+          <h2 id="project_tagline">PHP library - convert an image to indexed color mode.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/ccpalettes/gd-indexed-color-converter/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/ccpalettes/gd-indexed-color-converter/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="gdindexedcolorconverter" class="anchor" href="#gdindexedcolorconverter" aria-hidden="true"><span class="octicon octicon-link"></span></a>GDIndexedColorConverter</h1>
+
+<p><a href="https://github.com/ccpalettes/gd-indexed-color-converter">GDIndexedColorConverter</a> is a
+simple library that convert an image into <a href="http://en.wikipedia.org/wiki/In%0Adexed_color">indexed color</a> mode. With indexed color mode, an image can be displayed with only a few
+specific colors.</p>
+
+<p>To archieve image dithering effect, GDIndexedColorConverter uses <a href="http://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering">Floyd–Steinberg dithering</a> algorithm to apply error
+diffusion of each pixel onto its neighboring pixels.</p>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<p>Since GDIndexedColorConverter uses some functions of the <a href="http://php.net/manual/%0Aen/book.image.php">GD extension</a>, you need to the enable GD extension in the PHP configuration file
+(<a href="http://php.net/manual/en/ini.php"><code>php.ini</code></a>).</p>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>GDIndexedColorConverter provide a function named <code>convertToIndexedColor</code> to convert an image
+into indexed color mode, it accepts three parameters(listed below), and return a new image
+resource of indexed color mode.</p>
+
+<ul>
+<li><p><code>im</code> <em>(imageresource)</em> The image resource created by the functions of GD library.</p></li>
+<li><p><code>palette</code> <em>(array)</em> The palette which contains all the specific colors that the indexed-color-mode
+image will use. This parameter is an array which stores all the colors, each color is an
+indexed array that consists of red, green and blue color channel values.</p></li>
+<li><p><code>dither</code> <em>(float)</em> How much the Floyd–Steinberg dithering algorithm will affect the
+image. This parameter is optional, its default value is 0.75, and the value must be between
+0 and 1.</p></li>
+</ul>
+
+<p><strong>Code example:</strong></p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s2">    <span class="pl-c">// create an image</span></span>
+<span class="pl-s2">    <span class="pl-vo">$image</span> <span class="pl-k">=</span> <span class="pl-s3">imagecreatefromjpeg</span>(<span class="pl-s1"><span class="pl-pds">'</span>example.jpg<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s2"></span>
+<span class="pl-s2">    <span class="pl-c">// create a gd indexed color converter</span></span>
+<span class="pl-s2">    <span class="pl-vo">$converter</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-s3">GDIndexedColorConverter</span>();</span>
+<span class="pl-s2"></span>
+<span class="pl-s2">    <span class="pl-c">// the color palette</span></span>
+<span class="pl-s2">    <span class="pl-vo">$palette</span> <span class="pl-k">=</span> <span class="pl-s3">array</span>(</span>
+<span class="pl-s2">        <span class="pl-s3">array</span>(<span class="pl-c1">0</span>, <span class="pl-c1">0</span>, <span class="pl-c1">0</span>),</span>
+<span class="pl-s2">        <span class="pl-s3">array</span>(<span class="pl-c1">255</span>, <span class="pl-c1">255</span>, <span class="pl-c1">255</span>),</span>
+<span class="pl-s2">        <span class="pl-s3">array</span>(<span class="pl-c1">255</span>, <span class="pl-c1">0</span>, <span class="pl-c1">0</span>),</span>
+<span class="pl-s2">        <span class="pl-s3">array</span>(<span class="pl-c1">0</span>, <span class="pl-c1">255</span>, <span class="pl-c1">0</span>),</span>
+<span class="pl-s2">        <span class="pl-s3">array</span>(<span class="pl-c1">0</span>, <span class="pl-c1">0</span>, <span class="pl-c1">255</span>)</span>
+<span class="pl-s2">    );</span>
+<span class="pl-s2"></span>
+<span class="pl-s2">    <span class="pl-c">// convert the image to indexed color mode</span></span>
+<span class="pl-s2">    <span class="pl-vo">$new_image</span> <span class="pl-k">=</span> <span class="pl-vo">$converter</span><span class="pl-k">-&gt;</span>convertToIndexedColor(<span class="pl-vo">$image</span>, <span class="pl-vo">$palette</span>, <span class="pl-vo">$dither_amount</span>);</span>
+<span class="pl-s2"></span>
+<span class="pl-s2">    <span class="pl-c">// save the new image</span></span>
+<span class="pl-s2">    <span class="pl-s3">imagepng</span>(<span class="pl-vo">$new_image</span>, <span class="pl-s1"><span class="pl-pds">'</span>example_indexed_color.png<span class="pl-pds">'</span></span>, <span class="pl-c1">0</span>);</span></pre></div>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>GDIndexedColorConverter is licensed under the <a href="https://raw.githubusercontent.com/ccpalettes/gd-indexed-color-converter/master/LICENSE">MIT license</a>.</p>
+
+<p>Copyright (c) 2014 <a href="https://github.com/ccpalettes">Jeremy Yu</a> <a href="mailto:ccpalettes@gmail.com">ccpalettes@gmail.com</a></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">GDIndexedColorConverter maintained by <a href="https://github.com/ccpalettes">ccpalettes</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
