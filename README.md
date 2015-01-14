@@ -53,7 +53,7 @@ image. This parameter is optional, its default value is 0.75, and the value must
 	);
 
 	// convert the image to indexed color mode
-	$new_image = $converter->convertToIndexedColor($image, $palette, $dither_amount);
+	$new_image = $converter->convertToIndexedColor($image, $palette, 0.8);
 
 	// save the new image
 	imagepng($new_image, 'example_indexed_color.png', 0);
