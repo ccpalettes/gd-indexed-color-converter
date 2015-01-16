@@ -8,7 +8,7 @@
  *
  * @author Jeremy Yu
  * @copyright Copyright 2014 Jeremy Yu
- * @license MIT Licence http://www.opensource.org/licenses/mit-license.php
+ * @license https://github.com/ccpalettes/gd-indexed-color-converter/blob/master/LICENSE
  **/
 
 /**

@@ -1,7 +1,7 @@
 Example
 -------
 
-There is an simple example(`example.php`) in the example folder. It creates three
+There is a simple example(`example.php`) in the example folder. It creates three
 indexed-color images with different dither values and five colors(white, black, red,
 green and blue).
 

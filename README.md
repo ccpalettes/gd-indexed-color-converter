@@ -59,6 +59,19 @@ image. This parameter is optional, its default value is 0.75, and the value must
 	imagepng($new_image, 'example_indexed_color.png', 0);
 ```
 
+Dithers
+-------
+
+Apply different dither values on indexed-color images, you can get various image effects.
+In the `example` folder, there is a simple example that creates three indexed images with
+different dither values(0.2, 0.4, 0.8) and five colors(white, black, red, green and blue).
+
+![Example Output](https://raw.githubusercontent.com/ccpalettes/gd-indexed-color-converter/gh-pages/storage/example_output.jpg)
+
+The example image [`shell.jpg`](https://www.flickr.com/photos/sagesolar/10894165595) is
+created by [@sage_solar](https://www.flickr.com/photos/sagesolar/). The image is under
+[Creative Commons License](https://creativecommons.org/licenses/by/2.0/).
+
 License
 -------
 GDIndexedColorConverter is licensed under the [MIT license]
