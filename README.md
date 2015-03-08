@@ -2,9 +2,8 @@ GDIndexedColorConverter
 =======================
 
 [GDIndexedColorConverter](https://github.com/ccpalettes/gd-indexed-color-converter) is a
-simple library that convert an image into [indexed color](http://en.wikipedia.org/wiki/In
-dexed_color) mode. With indexed color mode, an image can be displayed with only a few
-specific colors.
+simple library that convert an image into [indexed color](http://en.wikipedia.org/wiki/Indexed_color)
+mode. With indexed color mode, an image can be displayed with only a few specific colors.
 
 To archieve image dithering effect, GDIndexedColorConverter uses [Floyd–Steinberg dithering]
 (http://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering) algorithm to apply error
@@ -13,9 +12,9 @@ diffusion of each pixel onto its neighboring pixels.
 Requirements
 ------------
 
-Since GDIndexedColorConverter uses some functions of the [GD extension](http://php.net/manual/
-en/book.image.php), you need to the enable GD extension in the PHP configuration file
-([`php.ini`](http://php.net/manual/en/ini.php)).
+Since GDIndexedColorConverter uses some functions of the
+[GD extension](http://php.net/manual/en/book.image.php), you need to the enable GD extension
+in the PHP configuration file ([`php.ini`](http://php.net/manual/en/ini.php)).
 
 Usage
 -----
@@ -62,7 +61,7 @@ image. This parameter is optional, its default value is 0.75, and the value must
 Dithers
 -------
 
-Apply different dither values on indexed-color images, you can get various image effects.
+Applying different dither values on indexed-color images, you can get various image effects.
 In the `example` folder, there is a simple example that creates three indexed images with
 different dither values(0.2, 0.4, 0.8) and five colors(white, black, red, green and blue).
 
