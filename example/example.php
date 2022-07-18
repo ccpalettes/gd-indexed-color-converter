@@ -4,8 +4,8 @@
  *
  * Licensed under The MIT License
  *
- * @author Jeremy Yu
- * @copyright Copyright (c) 2014 Jeremy Yu
+ * @author Evan Yu
+ * @copyright Copyright (c) 2014
  * @license https://github.com/ccpalettes/gd-indexed-color-converter/blob/master/LICENSE
  */
 
