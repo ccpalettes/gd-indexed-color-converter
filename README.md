@@ -76,5 +76,3 @@ License
 GDIndexedColorConverter is licensed under the [MIT license]
 (https://raw.githubusercontent.com/ccpalettes/gd-indexed-color-converter/master/LICENSE).
 
-Copyright (c) 2014 [Jeremy Yu](https://github.com/ccpalettes) <ccpalettes@gmail.com>
-
